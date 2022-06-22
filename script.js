@@ -11,19 +11,22 @@ searchButton.addEventListener('click', function (e) {
     let inputKey = document.querySelector('.input-keyword').value;
     let inputSelect = document.querySelector('.input-select').value;
     console.log(inputKey);
-    if (inputKey !== "" && inputKey) {
-        fetchData(`${KONTEN_BY_TEXT}${inputKey}`);
-        inputKey = '';
-    }else if (inputKey === '') {
-            fetchData(ALL_KONTEN);
-    } else if (inputSelect !== "" && inputSelect) {
-        fetchData(`${KONTEN_BY_MEDIA}${inputSelect}`);
-        inputSelect = '';
-    } else if (inputKey !== "" && inputSelect !== "semua media") {
+    console.log(inputSelect);
+    if (inputKey !== "" && inputSelect !== "Semua Media") {
+        console.log(`${KONTEN_BY_TEXT}${inputKey}&&media=${inputSelect}`);
         fetchData(`${KONTEN_BY_TEXT}${inputKey}&&media=${inputSelect}`);
         inputKey = '';
         inputSelect = 'semua media';
-    } else {
+    } else if (inputKey !== "" && inputKey) {
+        console.log(`${KONTEN_BY_TEXT}${inputKey}`);
+        fetchData(`${KONTEN_BY_TEXT}${inputKey}`);
+        inputKey = '';
+    } else if (inputSelect !== "Semua Media" && inputSelect) {
+        console.log(`${KONTEN_BY_MEDIA}${inputSelect}`);
+        fetchData(`${KONTEN_BY_MEDIA}${inputSelect}`);
+        inputSelect = '';
+    }  else {
+        fetchData(ALL_KONTEN);
         window.location.reload();
     }
 });
@@ -65,17 +68,17 @@ function getThumb(img, media) {
     switch (img) {
         case null && "":
             if (media === "video") {
-                return '/images/video.jpg';
+                return './images/video.jpg';
             } else if (media === "web") {
-                return '/images/website.jpg';
+                return './images/website.jpg';
             } else if (media === "tulisan") {
-                return '/images/Tulisan.jpg';
+                return './images/Tulisan.jpg';
             } else if (media === "podcast") {
-                return '/images/podcast.jpg';
+                return './images/podcast.jpg';
             }
             break;
         case img == "https://space.dailycode.id/profile":
-            return '/images/website.jpg';
+            return './images/website.jpg';
         default:
             return img;
     }
