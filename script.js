@@ -1,80 +1,82 @@
+
 const ALL_KONTEN = "https://api.pulo.dev/v1/contents";
-
 const KONTEN_BY_MEDIA = "https://api.pulo.dev/v1/contents?media=";
-
 const KONTEN_BY_TEXT = "https://api.pulo.dev/v1/contents?query=";
 
-const main = document.getElementById("main");
-const filter = document.getElementById("filter");
-const jenisMedia = document.getElementsByTagName("option");
-const cari = document.getElementById('cari');
-
-//getKonten(ALL_KONTEN);
-async function getKonten(url) {
-    console.log(getKonten())
-    const response = await fetch(url);
-    const data = await response.json();
-    displayKonten(data.data);
-}
-
-cari.addEventListener("submit", (e) =>{
+fetchData(ALL_KONTEN);
+// button
+const searchButton = document.querySelector('.search-button');
+searchButton.addEventListener('click', function (e) {
     e.preventDefault();
-    const filterText = filter.value;
-    const mediaText = jenisMedia.value;
-    if (filterText && filterText !== "") {
-        getKonten(KONTEN_BY_TEXT + filterText);
-        filterText="";
-    }else if (mediaText && mediaText !== ""){
-        getKonten( KONTEN_BY_MEDIA + mediaText)
-        mediaText="";
-    }else if (filterText !== "" && mediaText !== "") {
-        getKonten(KONTEN_BY_TEXT + filterText +"&&"+ KONTEN_BY_MEDIA + mediaText);
-        mediaText="";
-        filterText="";
-    }else {
+    let inputKey = document.querySelector('.input-keyword').value;
+    let inputSelect = document.querySelector('.input-select').value;
+    console.log(inputKey);
+    if (inputKey !== "" && inputKey) {
+        fetchData(`${KONTEN_BY_TEXT}${inputKey}`);
+        inputKey = '';
+    }else if (inputKey === '') {
+            fetchData(ALL_KONTEN);
+    } else if (inputSelect !== "" && inputSelect) {
+        fetchData(`${KONTEN_BY_MEDIA}${inputSelect}`);
+        inputSelect = '';
+    } else if (inputKey !== "" && inputSelect !== "semua media") {
+        fetchData(`${KONTEN_BY_TEXT}${inputKey}&&media=${inputSelect}`);
+        inputKey = '';
+        inputSelect = 'semua media';
+    } else {
         window.location.reload();
     }
 });
 
-function displayKonten(kontens) {
-    main.innerHTML = "";
-    Array.from(kontens).forEach(konten => {
-        const { title, body, url, media, contributor, thumbnail } = konten;
-        const kontenDiv = document.createElement("div");
-        kontenDiv.classList.add("col");
-        kontenDiv.innerHTML = `
-        <div class="card h-100 shadow-sm">
-        <span class="badge bg-info text-dark position-absolute top-0 start-20">${media}</span>
-        <img src="${getThumb(thumbnail,media)}" class="card-img-top " width="100%" alt="thumbnail">
-        <div class="card-body">
-            <h5 class="card-title"><a target="_blank" href="${url}">${title}</a></h5>
-            <h6> Contributor : ${contributor}</h6>
-            <p class="card-text">${body<20}</p>
-        </div>
-        </div>
-        `;
-        main.appendChild(kontenDiv);
-    })
+// fecth
+function fetchData(url) {
+    fetch(url)
+        .then(response => response.json())
+        .then(response => {
+            console.log(response.data);
+            const kontens = response.data;
+            let cards = '';
+            kontens.forEach(async m => cards += showCard(m));
+            const cardContainer = document.querySelector('.data-container');
+            cardContainer.innerHTML = cards;
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
 }
 
-function getThumb(img, media){
+function showCard(m) {
+    return `
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <span class="badge bg-info text-dark position-absolute top-0 start-20">${m.media}</span>
+            <img src="${getThumb(m.thumbnail, m.media)}" class="card-img-top" alt="thumbnail">
+            <div class="card-body">
+                <h5 class="card-title">${m.title}</h5>
+                <h6> Contributor : ${m.contributor}</h6>
+                <a target="_blank" href="${m.url}" class="btn btn-primary">Go somewhere</a>
+            </div>
+        </div>
+    </div>
+    `;
+}
+
+function getThumb(img, media) {
     switch (img) {
-        case null:
-            if(media === "video") {
+        case null && "":
+            if (media === "video") {
                 return '/images/video.jpg';
-            } else if(media === "web"){
+            } else if (media === "web") {
                 return '/images/website.jpg';
-            } else if(media === "tulisan"){
+            } else if (media === "tulisan") {
                 return '/images/Tulisan.jpg';
-            } else if(media === "podcast"){
-                return'/images/podcast.jpg';
+            } else if (media === "podcast") {
+                return '/images/podcast.jpg';
             }
             break;
+        case img == "https://space.dailycode.id/profile":
+            return '/images/website.jpg';
         default:
             return img;
-
     }
 }
-
-
-
