@@ -57,7 +57,7 @@ function showCard(m) {
             <div class="card-body">
                 <h5 class="card-title">${m.title}</h5>
                 <h6> Contributor : ${m.contributor}</h6>
-                <a target="_blank" href="${m.url}" class="btn btn-primary">Go somewhere</a>
+                <a target="_blank" href="${m.url}" class="btn btn-primary">Lanjutkan</a>
             </div>
         </div>
     </div>
